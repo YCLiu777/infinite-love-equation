@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chakra Animation</title>
+<style>
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html, body {
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* 容器：強制以寬度 100% 展開，撐滿整個藍框 */
+  .chakra-container {
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* 人物圖片：不限制高度，寬度 100% 填滿藍框 */
+  .person-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    /* 避免 keyframes 覆蓋，放大寫在 wrapper 或直接滿版 */
+    animation: breathing 4s ease-in-out infinite;
+  }
+
+  /* 呼吸動畫只動 opacity，不要去覆蓋 scale */
+  @keyframes breathing {
+    0%, 100% { opacity: 0.85; }
+    50% { opacity: 1; }
+  }
+
+  /* 光點樣式 */
+.chakra-point {
+  position: absolute;
+  left: 49.6%;            /* 由 50.5% 改為 49.6%，修正偏右問題 */
+  transform: translate(-50%, -50%);
+  width: 18px;
+  height: 18px;
+  pointer-events: none;
+}
+
+  .chakra-point::before {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border-radius: 50%;
+    background-color: currentColor;
+    animation: corePulse 3s ease-in-out infinite;
+  }
+
+  .chakra-point::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 50%;
+    border: 1.5px solid currentColor;
+    opacity: 0.4;
+    animation: ringPulse 3s ease-in-out infinite;
+  }
+
+  /* 針對這張 Sukhasana 圖精確對位 */
+    /* 嚴格對照示意圖之人體器官垂直比例 */
+    .c-crown     { top: 7.0%;  color: #d85cff; animation-delay: 0.0s; } /* 頂輪：頭頂頂端 */
+    .c-third-eye { top: 16.5%; color: #6757ff; animation-delay: 0.2s; } /* 眉心輪：雙眼與眉毛中心 */
+    .c-throat    { top: 29.0%; color: #25c8ff; animation-delay: 0.4s; } /* 喉輪：頸部正中 */
+    .c-heart     { top: 45.5%; color: #35e06f; animation-delay: 0.6s; } /* 心輪：胸口中心 */
+    .c-solar     { top: 58.5%; color: #ffd600; animation-delay: 0.8s; } /* 太陽神經叢/本我輪：橫膈膜/腹部上方 */
+    .c-sacral    { top: 70.0%; color: #ff8a00; animation-delay: 1.0s; } /* 臍輪：下腹/肚臍 */
+    .c-root      { top: 81.5%; color: #ff304f; animation-delay: 1.2s; } /* 海底輪：骨盆底會陰處（落在兩腿盤坐中心） */
+
+  @keyframes corePulse {
+    0%, 100% { transform: scale(0.8); filter: drop-shadow(0 0 3px currentColor); }
+    50% { transform: scale(1.3); filter: drop-shadow(0 0 10px currentColor) drop-shadow(0 0 18px currentColor); }
+  }
+
+  @keyframes ringPulse {
+    0%, 100% { transform: scale(0.8); opacity: 0.2; }
+    50% { transform: scale(1.6); opacity: 0.8; }
+  }
+
+ /* 隱藏 Netlify 協作抽屜與所有注入標籤 */
+netlify-drawer,
+[data-netlify-drawer],
+div[class*="netlify-drawer"],
+iframe[src*="netlify"],
+#netlify-drawer-root {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  width: 0 !important;
+  height: 0 !important;
+} 
+</style>
+</head>
+<body>
+
+  <div class="chakra-container">
+    <img src="images/Sukhasana.png" alt="能量脈輪" class="person-img">
+    <div class="chakra-point c-crown"></div>
+    <div class="chakra-point c-third-eye"></div>
+    <div class="chakra-point c-throat"></div>
+    <div class="chakra-point c-heart"></div>
+    <div class="chakra-point c-solar"></div>
+    <div class="chakra-point c-sacral"></div>
+    <div class="chakra-point c-root"></div>
+  </div>
+
+</body>
+</html>
+
