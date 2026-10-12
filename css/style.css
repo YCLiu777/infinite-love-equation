@@ -517,40 +517,46 @@ section {
    ========================================================================== */
 
 /* 限制在 container 內，超出範圍隱藏，不破壞原本版型 */
+/* 外層容器：確保硬體加速與正確裁切 */
 .marquee-box {
   width: 100%;
-  max-width: 1000px; /* 與原本 container 一致 */
-  margin: 40px auto 0;
   overflow: hidden;
   position: relative;
-  border-radius: 18px; /* 視窗四角圓潤修飾 */
+  /* 避免手機瀏覽器裁切運算異常 */
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 
-/* 滾動軌道 */
+/* 軌道：加入 3D 硬體加速，移除容易導致崩潰的 will-change */
 .marquee-track {
   display: flex;
-  gap: 18px; /* 與原本 3 格網格間距相同 */
+  gap: 18px;
   width: max-content;
   animation: marqueeScroll 45s linear infinite;
-  will-change: transform;
+  /* 強制開啟 GPU 渲染管線，避免閃爍或空白 */
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -webkit-perspective: 1000;
+  perspective: 1000;
 }
 
-/* 滑鼠移入或點按時暫停 */
-.marquee-box:hover .marquee-track {
+.marquee-track:hover {
   animation-play-state: paused;
 }
 
-/* 卡片基本樣式 */
+/* 卡片與圖片：強制最小尺寸與防空白 */
 .gallery-card {
-  /* 電腦版：(容器寬度 - 2個間距) / 3，寬度大約 300px~320px */
   flex: 0 0 calc((min(1000px, 100vw - 40px) - 36px) / 3);
   aspect-ratio: 4 / 3;
   border-radius: 18px;
   overflow: hidden;
   background: #f0ebe4;
   box-shadow: 0 8px 20px rgba(80, 55, 40, 0.06);
-  transition: transform 0.35s ease, box-shadow 0.35s ease;
-  cursor: pointer;
+  /* 確保每一張卡片獨立渲染 */
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
 }
 
 .gallery-card img {
@@ -558,54 +564,37 @@ section {
   height: 100%;
   object-fit: cover;
   display: block;
+  /* 防止圖片尚未載入時透明閃爍 */
+  background: #f0ebe4;
 }
 
-/* 滑鼠停留時：放大並微浮 */
-.gallery-card:hover {
-  transform: translateY(-6px) scale(1.05);
-  box-shadow: 0 16px 36px rgba(80, 55, 40, 0.18);
-  z-index: 10;
-  position: relative;
-}
-
-/* 跑馬燈軌道通用設定 */
-.marquee-track {
-  display: flex;
-  gap: 18px;
-  width: max-content;
-  /* 電腦版速度：45秒 */
-  animation: marqueeScroll 45s linear infinite;
-  will-change: transform;
-}
-
-/* 滑鼠移入時暫停（提升電腦版閱讀體驗，手機觸控不受影響） */
-.marquee-track:hover {
-  animation-play-state: paused;
-}
-
-/* 標準無縫循環：精準平移 -50% */
+/* 無縫循環：使用 translate3d 取代 2D translateX */
 @keyframes marqueeScroll {
-  from {
-    transform: translateX(0);
+  0% {
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
   }
-  to {
-    transform: translateX(-50%);
+  100% {
+    -webkit-transform: translate3d(-50%, 0, 0);
+    transform: translate3d(-50%, 0, 0);
   }
 }
 
-/* 手機版設定：拉慢速度、調整卡片大小 */
+/* 手機版適配 */
 @media (max-width: 768px) {
   .gallery-card {
-    flex: 0 0 220px;       /* 手機卡片適度縮小，視覺更協調 */
+    flex: 0 0 210px;
+    height: 157px; /* 提供固定高以防 aspect-ratio 計算崩潰 */
     border-radius: 14px;
   }
 
   .marquee-track {
-    gap: 14px;             /* 手機版間距稍小一點點 */
-    /* 手機版速度：拉長至 60s，滑動變慢、柔和不眼花 */
-    animation: marqueeScroll 60s linear infinite;
+    gap: 12px;
+    /* 速度設為 50s，平緩不眼花 */
+    animation: marqueeScroll 50s linear infinite;
   }
 }
+
 
   @keyframes marqueeScroll {
     from {
@@ -615,7 +604,7 @@ section {
       transform: translateX(calc(-50% - 6px));
     }
   }
-}
+
 
 .event-option {
   display: flex;
